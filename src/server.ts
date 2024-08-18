@@ -1,9 +1,7 @@
 import app from "./app";
 
-const port: number = 8000;
-
-app.listen(port, () => {
+app.listen(process.env.PORT, () => {
   console.log(
-    `Starting server on port ${port}. Listening on http://localhost:3000`,
+    `Starting server on port ${process.env.PORT}. Listening on http://localhost:${process.env.PORT}`,
   );
 });

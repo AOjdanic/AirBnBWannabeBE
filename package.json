@@ -4,7 +4,7 @@
   "description": "Playground for Node.js Restful api exercises for me",
   "main": "dist/server.js",
   "scripts": {
-    "start":  "nodemon ./src/server.ts"
+    "start": "nodemon --exec node -r ts-node/register --env-file=.env ./src/server.ts"
   },
   "author": "",
   "license": "ISC",

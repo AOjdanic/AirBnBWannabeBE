@@ -12,3 +12,8 @@ https://medium.com/@induwara99/a-step-by-step-guide-to-setting-up-a-node-js-proj
 - configuring nodemon in ts project:
 
 https://blog.logrocket.com/configuring-nodemon-typescript/
+
+- introduce the .env file (node js v20 has built-in support for env files,
+otherwise, dotenv package should be used)
+
+https://blog.tericcabrel.com/set-up-a-nodejs-project-with-typescript-eslint-and-prettier/
