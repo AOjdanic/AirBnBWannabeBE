@@ -17,3 +17,8 @@ https://blog.logrocket.com/configuring-nodemon-typescript/
 otherwise, dotenv package should be used)
 
 https://blog.tericcabrel.com/set-up-a-nodejs-project-with-typescript-eslint-and-prettier/
+
+
+-mongoose and connection to mongodb 
+https://mongoosejs.com/docs/index.html
+https://www.mongodb.com/docs/drivers/node/current/quick-start/connect-to-mongodb/
