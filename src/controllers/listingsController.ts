@@ -13,7 +13,8 @@ export const getAllListings = async (_: Request, res: Response) => {
 
 export const getListing = async (req: Request, res: Response) => {
   const { id } = req.params;
-  const listing = await Listing.findById(id); // doesn't work
+
+  const listing = await Listing.findById(id);
 
   res.status(200).json({
     message: `This is only one listing with id ${id}`,

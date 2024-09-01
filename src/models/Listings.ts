@@ -1,6 +1,9 @@
 import mongoose from 'mongoose';
 
 const listingSchema = new mongoose.Schema({
+  _id: {
+    type: String,
+  },
   listing_url: {
     type: String,
   },
