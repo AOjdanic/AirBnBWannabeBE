@@ -1,7 +1,10 @@
 import express, { Request, Response } from 'express';
 import morgan from 'morgan';
 
+import globalErrorHandler from './controllers/errorController';
+
 import listings from './routes/listings';
+import { AppError } from './utils/AppError';
 
 const app = express();
 
@@ -16,5 +19,11 @@ app.get('/', (_: Request, res: Response) => {
     message: 'Hello There. General Kenobi! You are a bold one',
   });
 });
+
+app.all('*', (req, _, next) => {
+  next(new AppError(`Can't find ${req.originalUrl} on this server`, 404));
+});
+
+app.use(globalErrorHandler);
 
 export default app;

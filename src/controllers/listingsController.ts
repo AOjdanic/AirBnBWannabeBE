@@ -1,62 +1,87 @@
-import { Request, Response } from 'express';
+import { NextFunction, Request, Response } from 'express';
+
 import Listing from '../models/Listings';
 
-export const getAllListings = async (_: Request, res: Response) => {
-  const listings = await Listing.find().limit(30);
-  res.status(200).json({
-    message: 'success',
-    data: {
-      listings,
-    },
-  });
-};
+import { catchAsyncErrors } from '../utils/catchAsyncErrors';
+import { AppError } from '../utils/AppError';
 
-export const createListing = async (req: Request, res: Response) => {
-  const listing = await Listing.create(req.body);
+export const getAllListings = catchAsyncErrors(
+  async (_: Request, res: Response) => {
+    const listings = await Listing.find().limit(30);
+    res.status(200).json({
+      message: 'success',
+      data: {
+        listings,
+      },
+    });
+  },
+);
 
-  return res.status(201).json({
-    message: 'success',
-    data: {
-      listing,
-    },
-  });
-};
+export const createListing = catchAsyncErrors(
+  async (req: Request, res: Response) => {
+    const listing = await Listing.create(req.body);
 
-export const getListing = async (req: Request, res: Response) => {
-  const { id } = req.params;
+    return res.status(201).json({
+      message: 'success',
+      data: {
+        listing,
+      },
+    });
+  },
+);
 
-  const listing = await Listing.findById(id);
+export const getListing = catchAsyncErrors(
+  async (req: Request, res: Response, next: NextFunction) => {
+    const { id } = req.params;
 
-  res.status(200).json({
-    message: 'success',
-    data: {
-      listing,
-    },
-  });
-};
+    const listing = await Listing.findById(id);
 
-export const updateListing = async (req: Request, res: Response) => {
-  const { id } = req.params;
+    if (!listing) {
+      return next(new AppError('No Listing found with given id', 404));
+    }
 
-  const updatedListing = await Listing.findByIdAndUpdate(id, req.body, {
-    new: true,
-    runValidators: true,
-  });
+    res.status(200).json({
+      message: 'success',
+      data: {
+        listing,
+      },
+    });
+  },
+);
 
-  res.status(200).json({
-    message: 'success',
-    data: {
-      listing: updatedListing,
-    },
-  });
-};
+export const updateListing = catchAsyncErrors(
+  async (req: Request, res: Response, next: NextFunction) => {
+    const { id } = req.params;
 
-export const deleteListing = async (req: Request, res: Response) => {
-  const { id } = req.params;
+    const updatedListing = await Listing.findByIdAndUpdate(id, req.body, {
+      new: true,
+      runValidators: true,
+    });
 
-  await Listing.findByIdAndDelete(id);
+    if (!updatedListing) {
+      return next(new AppError('No Listing found with given id', 404));
+    }
 
-  res.status(204).json({
-    message: 'success',
-  });
-};
+    res.status(200).json({
+      message: 'success',
+      data: {
+        listing: updatedListing,
+      },
+    });
+  },
+);
+
+export const deleteListing = catchAsyncErrors(
+  async (req: Request, res: Response, next: NextFunction) => {
+    const { id } = req.params;
+
+    const listing = await Listing.findByIdAndDelete(id);
+
+    if (!listing) {
+      return next(new AppError('No Listing found with given id', 404));
+    }
+    res.status(204).json({
+      message: 'success',
+    });
+  },
+);
