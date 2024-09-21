@@ -1,5 +1,4 @@
 /* eslint-disable no-console */
-import app from './app';
 import mongoose from 'mongoose';
 
 process.on('uncaughtException', (err) => {
@@ -7,6 +6,8 @@ process.on('uncaughtException', (err) => {
   console.log(err);
   process.exit(1);
 });
+
+import app from './app';
 
 const uri =
   process.env.DATABASE_URI?.replace(
