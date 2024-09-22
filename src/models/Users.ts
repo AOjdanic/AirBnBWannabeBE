@@ -15,12 +15,6 @@ const userSchema = new mongoose.Schema<UserSchema>({
   name: {
     type: String,
     required: [true, 'Please provide both your first and last name'],
-    validate: {
-      validator: function (name: string) {
-        return name.split(' ').length === 2;
-      },
-      message: () => 'Name must be composed of only two words',
-    },
   },
   email: {
     type: String,
