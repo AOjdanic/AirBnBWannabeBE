@@ -1,9 +1,11 @@
+import crypto from 'crypto';
 import jwt from 'jsonwebtoken';
 import { promisify } from 'util';
 import { Types } from 'mongoose';
 import { NextFunction, Response } from 'express';
 
 import User from '../models/Users';
+import sendEmail from '../utils/email';
 import { RequestWithUser } from '../types';
 import { AppError } from '../utils/AppError';
 import { catchAsyncErrors } from '../utils/catchAsyncErrors';
@@ -130,3 +132,77 @@ export const restrictTo =
 
     next();
   };
+
+export const forgotPassword = catchAsyncErrors(
+  async (req: RequestWithUser, res: Response, next: NextFunction) => {
+    const { email } = req.body;
+
+    const user = await User.findOne({ email });
+
+    if (!user)
+      return next(new AppError('User with provided email does not exist', 404));
+
+    // @ts-expect-error utoehutn
+    const resetToken = user.createPasswordResetToken();
+    await user.save({ validateBeforeSave: false });
+
+    const resetURL = `${req.protocol}://${req.hostname}/api/v1/users/reset-password/${resetToken}`;
+
+    try {
+      await sendEmail({
+        message: `Use the link at ${resetURL} in order to reset your password. If you did not request this change, please ignore this email`,
+        to: user.email,
+        subject: 'Reset password',
+      });
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    } catch (err) {
+      user.passwordResetToken = undefined;
+      user.passwordResetTokenExpires = undefined;
+      await user.save({ validateBeforeSave: false });
+
+      console.log(err);
+      return next(
+        new AppError(
+          'Something wrong happened with the password reset request. Please try again',
+          500,
+        ),
+      );
+    }
+
+    res.status(200).json({
+      status: 'success',
+      message: 'Reset password link sent to the email',
+    });
+  },
+);
+
+export const resetPassword = catchAsyncErrors(async (req, res, next) => {
+  const { token: tokenParam } = req.params;
+
+  const hashToken = crypto
+    .createHash('sha256')
+    .update(tokenParam)
+    .digest('hex');
+
+  const user = await User.findOne({
+    passwordResetToken: hashToken,
+    passwordResetTokenExpires: { $gt: Date.now() },
+  });
+
+  if (!user) {
+    return next(new AppError('Token is invalid or has expired', 400));
+  }
+
+  user.password = req.body.password;
+  user.passwordConfirm = req.body.passwordConfirm;
+  user.passwordResetToken = undefined;
+  user.passwordResetTokenExpires = undefined;
+  await user.save();
+
+  const token = signToken(user._id);
+
+  res.status(200).json({
+    status: 'success',
+    token,
+  });
+});

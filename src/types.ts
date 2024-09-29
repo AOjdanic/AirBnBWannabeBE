@@ -17,6 +17,8 @@ export type UserSchema = {
   passwordConfirm?: string;
   changedPasswordAt?: string;
   role: 'admin' | 'user';
+  passwordResetToken?: string;
+  passwordResetTokenExpires?: string;
 };
 
 export type RequestWithUser = Request & { user?: UserSchema };
