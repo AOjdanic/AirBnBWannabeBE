@@ -14,7 +14,7 @@ export default [
         'warn',
         {
           vars: 'all',
-          args: 'after-used',
+          args: 'none',
           caughtErrors: 'all',
           ignoreRestSiblings: false,
           reportUsedIgnorePattern: false,
