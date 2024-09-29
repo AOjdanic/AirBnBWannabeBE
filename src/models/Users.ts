@@ -1,15 +1,7 @@
 import mongoose from 'mongoose';
 import bcrypt from 'bcryptjs';
 
-type UserSchema = {
-  name: string;
-  email: string;
-  birthdate: string;
-  address: string;
-  username: string;
-  password: string;
-  passwordConfirm?: string;
-};
+import { UserSchema } from '../types';
 
 const userSchema = new mongoose.Schema<UserSchema>({
   name: {
@@ -36,6 +28,7 @@ const userSchema = new mongoose.Schema<UserSchema>({
     type: String,
     required: [true, 'Please provide a password'],
     minlength: 8,
+    select: false,
   },
   passwordConfirm: {
     type: String,
@@ -47,6 +40,7 @@ const userSchema = new mongoose.Schema<UserSchema>({
       message: 'The passwords do not match',
     },
   },
+  changedPasswordAt: Date,
 });
 
 userSchema.pre('save', async function (next) {
@@ -57,6 +51,25 @@ userSchema.pre('save', async function (next) {
 
   next();
 });
+
+userSchema.methods.comparePasswords = async function (
+  inputPass: string,
+  userPass: string,
+) {
+  return await bcrypt.compare(inputPass, userPass);
+};
+
+userSchema.methods.changedPasswordAfterIssuedToken = function (
+  jwtTimestamp: number,
+) {
+  if (this?.changedPasswordAt) {
+    const changedTimestamp = this.changedPasswordAt.getTime() / 1000;
+
+    return changedTimestamp > jwtTimestamp;
+  }
+
+  return false;
+};
 
 const User = mongoose.model('users', userSchema);
 
