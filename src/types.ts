@@ -16,6 +16,7 @@ export type UserSchema = {
   password: string;
   passwordConfirm?: string;
   changedPasswordAt?: string;
+  role: 'admin' | 'user';
 };
 
 export type RequestWithUser = Request & { user?: UserSchema };

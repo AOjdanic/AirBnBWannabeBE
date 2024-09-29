@@ -24,6 +24,11 @@ const userSchema = new mongoose.Schema<UserSchema>({
       return `${firstName[0]}${lastName}`.toLowerCase();
     },
   },
+  role: {
+    type: String,
+    enum: ['user', 'admin'],
+    default: 'user',
+  },
   password: {
     type: String,
     required: [true, 'Please provide a password'],

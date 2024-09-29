@@ -115,3 +115,18 @@ export const protect = catchAsyncErrors(
     next();
   },
 );
+
+export const restrictTo =
+  (...roles: string[]) =>
+  (req: RequestWithUser, _: Response, next: NextFunction) => {
+    if (req?.user?.role && !roles.includes(req?.user?.role)) {
+      return next(
+        new AppError(
+          'You do not have permissions to access this resource',
+          403,
+        ),
+      );
+    }
+
+    next();
+  };
