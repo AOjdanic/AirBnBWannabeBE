@@ -55,6 +55,17 @@ const userSchema = new Schema<UserType, UserModel, UserStaticMethods>({
   changedPasswordAt: Date,
   passwordResetToken: String,
   passwordResetTokenExpires: Date,
+  active: {
+    type: Boolean,
+    default: true,
+    select: false,
+  },
+});
+
+userSchema.pre(/^find/, function (next) {
+  //@ts-expect-error something with types again
+  this.find({ active: { $ne: false } });
+  next();
 });
 
 userSchema.pre('save', async function (next) {

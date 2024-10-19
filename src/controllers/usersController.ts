@@ -5,11 +5,12 @@ import { AppError } from '../utils/AppError';
 import { catchAsyncErrors } from '../utils/catchAsyncErrors';
 
 export const getAllUsers = catchAsyncErrors(
-  async (req: Request, res: Response, next: NextFunction) => {
+  async (_: Request, res: Response) => {
     const users = await User.find();
 
     res.status(200).json({
       status: 'success',
+      length: users.length,
       data: {
         users,
       },
@@ -17,7 +18,7 @@ export const getAllUsers = catchAsyncErrors(
   },
 );
 
-export const updateMe = catchAsyncErrors(
+export const updateUserData = catchAsyncErrors(
   async (req: Request, res: Response, next: NextFunction) => {
     const { password, passwordConfirm, name } = req.body;
 
@@ -44,3 +45,11 @@ export const updateMe = catchAsyncErrors(
     });
   },
 );
+
+export const deleteUser = catchAsyncErrors(async (req, res) => {
+  await User.findByIdAndUpdate(req.user._id, { active: false });
+  res.status(204).json({
+    status: 'success',
+    data: null,
+  });
+});

@@ -20,6 +20,7 @@ export type UserType = {
   role: 'admin' | 'user';
   passwordResetToken: string | undefined;
   passwordResetTokenExpires: number | undefined;
+  active: boolean;
 };
 
 export type UserStaticMethods = {
