@@ -1,4 +1,3 @@
-import { Request } from 'express';
 import { Model, Types, HydratedDocument } from 'mongoose';
 
 export interface TAppError {
@@ -31,6 +30,4 @@ export type UserStaticMethods = {
 
 export type UserModel = Model<UserType, object, UserStaticMethods>;
 
-type UserDocument = HydratedDocument<UserType, UserStaticMethods>;
-
-export type RequestWithUser = Request & { user?: UserDocument };
+export type UserDocument = HydratedDocument<UserType, UserStaticMethods>;

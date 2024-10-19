@@ -1,4 +1,4 @@
-import { TAppError } from '../types';
+import { TAppError } from '../types/types';
 
 export class AppError extends Error implements TAppError {
   status: string;

@@ -2,7 +2,7 @@ import { Schema, model } from 'mongoose';
 import bcrypt from 'bcryptjs';
 import crypto from 'crypto';
 
-import { UserType, UserModel, UserStaticMethods } from '../types';
+import { UserType, UserModel, UserStaticMethods } from '../types/types';
 
 const userSchema = new Schema<UserType, UserModel, UserStaticMethods>({
   name: {

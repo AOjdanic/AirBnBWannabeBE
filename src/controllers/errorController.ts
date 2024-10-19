@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 import { NextFunction, Request, Response } from 'express';
 
-import { TAppError } from '../types';
+import { TAppError } from '../types/types';
 
 export default (
   err: TAppError,

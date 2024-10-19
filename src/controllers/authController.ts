@@ -2,11 +2,10 @@ import crypto from 'crypto';
 import jwt from 'jsonwebtoken';
 import { promisify } from 'util';
 import { Types } from 'mongoose';
-import { NextFunction, Response } from 'express';
+import { Request, NextFunction, Response } from 'express';
 
 import User from '../models/Users';
 import sendEmail from '../utils/email';
-import { RequestWithUser } from '../types';
 import { AppError } from '../utils/AppError';
 import { catchAsyncErrors } from '../utils/catchAsyncErrors';
 
@@ -65,7 +64,7 @@ export const login = catchAsyncErrors(async (req, res, next) => {
 });
 
 export const protect = catchAsyncErrors(
-  async (req: RequestWithUser, res: Response, next: NextFunction) => {
+  async (req: Request, res: Response, next: NextFunction) => {
     let token = '';
     if (!req.headers.authorization) {
       return next(
@@ -118,7 +117,7 @@ export const protect = catchAsyncErrors(
 
 export const restrictTo =
   (...roles: string[]) =>
-  (req: RequestWithUser, _: Response, next: NextFunction) => {
+  (req: Request, _: Response, next: NextFunction) => {
     if (req?.user?.role && !roles.includes(req?.user?.role)) {
       return next(
         new AppError(
@@ -132,7 +131,7 @@ export const restrictTo =
   };
 
 export const forgotPassword = catchAsyncErrors(
-  async (req: RequestWithUser, res: Response, next: NextFunction) => {
+  async (req: Request, res: Response, next: NextFunction) => {
     const { email } = req.body;
 
     const user = await User.findOne({ email });
@@ -204,14 +203,10 @@ export const resetPassword = catchAsyncErrors(async (req, res, next) => {
 });
 
 export const updatePassword = catchAsyncErrors(
-  async (req: RequestWithUser, res: Response, next: NextFunction) => {
+  async (req: Request, res: Response, next: NextFunction) => {
     const { password, passwordNew, passwordConfirm } = req.body;
 
-    let user;
-
-    if (req.user) {
-      user = await User.findById(req.user._id).select('+password');
-    }
+    const user = await User.findById(req.user._id).select('+password');
 
     if (!user) {
       return next(
