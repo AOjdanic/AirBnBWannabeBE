@@ -4,6 +4,7 @@ import rateLimit from 'express-rate-limit';
 import helmet from 'helmet';
 import expressMongoSanitize from 'express-mongo-sanitize';
 import xss from 'xss-clean';
+import hpp from 'hpp';
 
 import globalErrorHandler from './controllers/errorController';
 
@@ -29,6 +30,20 @@ app.use(express.json({ limit: '10kb' }));
 app.use(expressMongoSanitize());
 
 app.use(xss());
+
+app.use(
+  hpp({
+    whitelist: [
+      'beds',
+      'price',
+      'baths',
+      'bedrooms',
+      'last_scraped',
+      'maximum_nights',
+      'minimum_nights',
+    ],
+  }),
+);
 
 app.use(morgan('dev'));
 
