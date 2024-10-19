@@ -2,6 +2,8 @@ import express, { Request, Response } from 'express';
 import morgan from 'morgan';
 import rateLimit from 'express-rate-limit';
 import helmet from 'helmet';
+import expressMongoSanitize from 'express-mongo-sanitize';
+import xss from 'xss-clean';
 
 import globalErrorHandler from './controllers/errorController';
 
@@ -23,6 +25,10 @@ const limiter = rateLimit({
 app.use(limiter);
 
 app.use(express.json({ limit: '10kb' }));
+
+app.use(expressMongoSanitize());
+
+app.use(xss());
 
 app.use(morgan('dev'));
 
