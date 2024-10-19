@@ -93,7 +93,7 @@ export const protect = catchAsyncErrors(
     // prettier-ignore
     const decoded: Decoded = await promisify(jwt.verify)( token, process.env.JWT_SECRET);
 
-    const user = await User.findById(decoded.id).select('+password');
+    const user = await User.findById(decoded.id);
 
     if (!user) {
       return next(
@@ -206,8 +206,12 @@ export const resetPassword = catchAsyncErrors(async (req, res, next) => {
 export const updatePassword = catchAsyncErrors(
   async (req: RequestWithUser, res: Response, next: NextFunction) => {
     const { password, passwordNew, passwordConfirm } = req.body;
-    // 1) get user from the collection
-    const user = req.user;
+
+    let user;
+
+    if (req.user) {
+      user = await User.findById(req.user._id).select('+password');
+    }
 
     if (!user) {
       return next(
@@ -222,11 +226,9 @@ export const updatePassword = catchAsyncErrors(
         new AppError('Invalid password provided. Please try again', 401),
       );
 
-    // 3) if so, update password
     user.password = passwordNew;
     user.passwordConfirm = passwordConfirm;
     await user.save();
-    // 4) log user in, send JWT
 
     const token = signToken(user._id);
     res.status(200).json({
