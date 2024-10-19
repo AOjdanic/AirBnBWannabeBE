@@ -1,6 +1,7 @@
 import express, { Request, Response } from 'express';
 import morgan from 'morgan';
 import rateLimit from 'express-rate-limit';
+import helmet from 'helmet';
 
 import globalErrorHandler from './controllers/errorController';
 
@@ -11,6 +12,8 @@ import { AppError } from './utils/AppError';
 
 const app = express();
 
+app.use(helmet());
+
 const limiter = rateLimit({
   windowMs: 60 * 60 * 1000,
   limit: 100,
@@ -19,7 +22,7 @@ const limiter = rateLimit({
 
 app.use(limiter);
 
-app.use(express.json());
+app.use(express.json({ limit: '10kb' }));
 
 app.use(morgan('dev'));
 
