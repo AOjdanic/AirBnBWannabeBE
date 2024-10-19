@@ -205,7 +205,7 @@ export const resetPassword = catchAsyncErrors(async (req, res, next) => {
 
 export const updatePassword = catchAsyncErrors(
   async (req: RequestWithUser, res: Response, next: NextFunction) => {
-    const { password, passwordNew, passwordMatch } = req.body;
+    const { password, passwordNew, passwordConfirm } = req.body;
     // 1) get user from the collection
     const user = req.user;
 
@@ -215,10 +215,7 @@ export const updatePassword = catchAsyncErrors(
       );
     }
 
-    const passwordsMatch = await user.comparePasswords(
-      password,
-      user?.password,
-    );
+    const passwordsMatch = await user.comparePasswords(password, user.password);
 
     if (!passwordsMatch)
       return next(
@@ -227,7 +224,7 @@ export const updatePassword = catchAsyncErrors(
 
     // 3) if so, update password
     user.password = passwordNew;
-    user.passwordConfirm = passwordMatch;
+    user.passwordConfirm = passwordConfirm;
     await user.save();
     // 4) log user in, send JWT
 
