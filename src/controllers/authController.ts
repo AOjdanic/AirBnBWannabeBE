@@ -12,7 +12,7 @@ import { catchAsyncErrors } from '../utils/catchAsyncErrors';
 
 type Decoded = {
   id: string;
-  iat: string;
+  iat: number;
   exp: string;
 };
 
@@ -50,7 +50,6 @@ export const login = catchAsyncErrors(async (req, res, next) => {
 
   const user = await User.findOne({ email }).select('+password');
 
-  // @ts-expect-error will fix types of user doc/schema
   if (!user || !(await user.comparePasswords(password, user.password))) {
     return next(
       new AppError('Invalid credentials provided. Please try again', 401),
@@ -94,7 +93,7 @@ export const protect = catchAsyncErrors(
     // prettier-ignore
     const decoded: Decoded = await promisify(jwt.verify)( token, process.env.JWT_SECRET);
 
-    const user = await User.findById(decoded.id);
+    const user = await User.findById(decoded.id).select('+password');
 
     if (!user) {
       return next(
@@ -102,7 +101,6 @@ export const protect = catchAsyncErrors(
       );
     }
 
-    // @ts-expect-error does not recognize the function signature
     if (user.changedPasswordAfterIssuedToken(decoded.iat)) {
       return next(
         new AppError(
@@ -142,7 +140,6 @@ export const forgotPassword = catchAsyncErrors(
     if (!user)
       return next(new AppError('User with provided email does not exist', 404));
 
-    // @ts-expect-error utoehutn
     const resetToken = user.createPasswordResetToken();
     await user.save({ validateBeforeSave: false });
 
@@ -160,7 +157,6 @@ export const forgotPassword = catchAsyncErrors(
       user.passwordResetTokenExpires = undefined;
       await user.save({ validateBeforeSave: false });
 
-      console.log(err);
       return next(
         new AppError(
           'Something wrong happened with the password reset request. Please try again',
@@ -206,3 +202,39 @@ export const resetPassword = catchAsyncErrors(async (req, res, next) => {
     token,
   });
 });
+
+export const updatePassword = catchAsyncErrors(
+  async (req: RequestWithUser, res: Response, next: NextFunction) => {
+    const { password, passwordNew, passwordMatch } = req.body;
+    // 1) get user from the collection
+    const user = req.user;
+
+    if (!user) {
+      return next(
+        new AppError('You are not logged in. Please log in first', 401),
+      );
+    }
+
+    const passwordsMatch = await user.comparePasswords(
+      password,
+      user?.password,
+    );
+
+    if (!passwordsMatch)
+      return next(
+        new AppError('Invalid password provided. Please try again', 401),
+      );
+
+    // 3) if so, update password
+    user.password = passwordNew;
+    user.passwordConfirm = passwordMatch;
+    await user.save();
+    // 4) log user in, send JWT
+
+    const token = signToken(user._id);
+    res.status(200).json({
+      user,
+      token,
+    });
+  },
+);
