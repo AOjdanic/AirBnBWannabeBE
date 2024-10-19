@@ -8,6 +8,12 @@ const userSchema = new Schema<UserType, UserModel, UserStaticMethods>({
   name: {
     type: String,
     required: [true, 'Please provide both your first and last name'],
+    validate: {
+      validator: function (name) {
+        return name.split(' ').length > 1;
+      },
+      message: 'Please provide both your first and last name',
+    },
   },
   email: {
     type: String,
