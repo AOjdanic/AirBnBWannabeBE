@@ -8,12 +8,35 @@ import User from '../models/Users';
 import sendEmail from '../utils/email';
 import { AppError } from '../utils/AppError';
 import { catchAsyncErrors } from '../utils/catchAsyncErrors';
+import { UserDocument } from '../types/types';
 
 type Decoded = {
   id: string;
   iat: number;
   exp: string;
 };
+
+function createAndSendToken(user: UserDocument, status: number, res: Response) {
+  const token = signToken(user._id);
+
+  const cookieOptions = {
+    expires: new Date(Date.now() + Number(process.env.JWT_COOKIE_EXPIRES_IN!)),
+    httpOnly: true,
+    secure: false,
+  };
+
+  if (process.env.NODE_ENV === 'production') cookieOptions.secure = true;
+
+  res.cookie('jwt', token, cookieOptions);
+
+  res.status(status).json({
+    message: 'success',
+    token,
+    data: {
+      user,
+    },
+  });
+}
 
 const signToken = (id: Types.ObjectId) =>
   jwt.sign({ id: id.toString('hex') }, process.env.JWT_SECRET!, {
@@ -30,15 +53,7 @@ export const signup = catchAsyncErrors(async (req, res) => {
     passwordConfirm,
   });
 
-  const token = signToken(newUser._id);
-
-  res.status(201).json({
-    message: 'success',
-    token,
-    data: {
-      user: newUser,
-    },
-  });
+  createAndSendToken(newUser, 201, res);
 });
 
 export const login = catchAsyncErrors(async (req, res, next) => {
@@ -55,12 +70,7 @@ export const login = catchAsyncErrors(async (req, res, next) => {
     );
   }
 
-  const token = signToken(user._id);
-
-  res.status(200).json({
-    token,
-    message: 'success',
-  });
+  createAndSendToken(user, 200, res);
 });
 
 export const protect = catchAsyncErrors(
@@ -194,12 +204,7 @@ export const resetPassword = catchAsyncErrors(async (req, res, next) => {
   user.passwordResetTokenExpires = undefined;
   await user.save();
 
-  const token = signToken(user._id);
-
-  res.status(200).json({
-    status: 'success',
-    token,
-  });
+  createAndSendToken(user, 200, res);
 });
 
 export const updatePassword = catchAsyncErrors(
@@ -225,10 +230,6 @@ export const updatePassword = catchAsyncErrors(
     user.passwordConfirm = passwordConfirm;
     await user.save();
 
-    const token = signToken(user._id);
-    res.status(200).json({
-      user,
-      token,
-    });
+    createAndSendToken(user, 200, res);
   },
 );
