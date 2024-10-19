@@ -1,5 +1,6 @@
 import express, { Request, Response } from 'express';
 import morgan from 'morgan';
+import rateLimit from 'express-rate-limit';
 
 import globalErrorHandler from './controllers/errorController';
 
@@ -9,6 +10,14 @@ import listings from './routes/listings';
 import { AppError } from './utils/AppError';
 
 const app = express();
+
+const limiter = rateLimit({
+  windowMs: 60 * 60 * 1000,
+  limit: 100,
+  message: 'Too many request from this IP address. Please try again later',
+});
+
+app.use(limiter);
 
 app.use(express.json());
 
