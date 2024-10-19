@@ -4,12 +4,20 @@ import Listing from '../models/Listings';
 
 import { catchAsyncErrors } from '../services/catchAsyncErrors';
 import { AppError } from '../services/AppError';
+import { ApiFilteringService } from '../services/ApiFilteringService';
 
 export const getAllListings = catchAsyncErrors(
-  async (_: Request, res: Response) => {
-    const listings = await Listing.find().limit(30);
+  async (req: Request, res: Response) => {
+    const finalListingQuery = new ApiFilteringService(Listing.find(), req.query)
+      .filter()
+      .sort()
+      .paginate()
+      .select();
+
+    const listings = await finalListingQuery.mongooseQuery;
     res.status(200).json({
       message: 'success',
+      results: listings.length,
       data: {
         listings,
       },
