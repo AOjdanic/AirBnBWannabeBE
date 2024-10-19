@@ -10,7 +10,7 @@ import globalErrorHandler from './controllers/errorController';
 import users from './routes/users';
 import listings from './routes/listings';
 
-import { AppError } from './utils/AppError';
+import { AppError } from './services/AppError';
 
 const app = express();
 

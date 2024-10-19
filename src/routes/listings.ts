@@ -7,11 +7,19 @@ import {
   getListing,
   updateListing,
 } from '../controllers/listingsController';
+import { protect, restrictTo } from '../controllers/authController';
 
 const router = express.Router();
 
-router.route('/').get(getAllListings).post(createListing);
+router
+  .route('/')
+  .get(getAllListings)
+  .post(protect, restrictTo('admin'), createListing);
 
-router.route('/:id').get(getListing).delete(deleteListing).patch(updateListing);
+router
+  .route('/:id')
+  .get(getListing)
+  .delete(protect, restrictTo('admin'), deleteListing)
+  .patch(protect, restrictTo('admin'), updateListing);
 
 export default router;

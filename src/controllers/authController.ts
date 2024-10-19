@@ -5,9 +5,9 @@ import { Types } from 'mongoose';
 import { Request, NextFunction, Response } from 'express';
 
 import User from '../models/Users';
-import sendEmail from '../utils/email';
-import { AppError } from '../utils/AppError';
-import { catchAsyncErrors } from '../utils/catchAsyncErrors';
+import sendEmail from '../services/email';
+import { AppError } from '../services/AppError';
+import { catchAsyncErrors } from '../services/catchAsyncErrors';
 import { UserDocument } from '../types/types';
 
 type Decoded = {

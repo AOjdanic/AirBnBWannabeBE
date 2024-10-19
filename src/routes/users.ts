@@ -23,10 +23,12 @@ router.route('/login').post(login);
 router.route('/forgot-password').post(forgotPassword);
 router.route('/reset-password/:token').patch(resetPassword);
 
-router.route('/update-password').patch(protect, updatePassword);
-router.route('/update-user-data').patch(protect, updateUserData);
+router.use(protect);
 
-router.route('/delete-account').delete(protect, deleteUser);
+router.route('/update-password').patch(updatePassword);
+router.route('/update-user-data').patch(updateUserData);
+
+router.route('/delete-account').delete(deleteUser);
 
 router.route('/').get(getAllUsers);
 

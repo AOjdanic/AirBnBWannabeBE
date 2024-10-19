@@ -1,8 +1,8 @@
 import { NextFunction, Request, Response } from 'express';
 
 import User from '../models/Users';
-import { AppError } from '../utils/AppError';
-import { catchAsyncErrors } from '../utils/catchAsyncErrors';
+import { AppError } from '../services/AppError';
+import { catchAsyncErrors } from '../services/catchAsyncErrors';
 
 export const getAllUsers = catchAsyncErrors(
   async (_: Request, res: Response) => {

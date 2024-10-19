@@ -2,8 +2,8 @@ import { NextFunction, Request, Response } from 'express';
 
 import Listing from '../models/Listings';
 
-import { catchAsyncErrors } from '../utils/catchAsyncErrors';
-import { AppError } from '../utils/AppError';
+import { catchAsyncErrors } from '../services/catchAsyncErrors';
+import { AppError } from '../services/AppError';
 
 export const getAllListings = catchAsyncErrors(
   async (_: Request, res: Response) => {
