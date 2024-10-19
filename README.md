@@ -8,3 +8,5 @@
 - [configuring nodemon in ts project](https://blog.logrocket.com/configuring-nodemon-typescript/)
 - [introduce the .env file](https://blog.tericcabrel.com/set-up-a-nodejs-project-with-typescript-eslint-and-prettier/) (node js v20 has built-in support for env files, otherwise, dotenv package should be used)
 - [connecting mongoose to mongodb](https://www.mongodb.com/docs/drivers/node/current/quick-start/connect-to-mongodb/)
+- [extending native express Request object with custom properties](https://blog.logrocket.com/extend-express-request-object-typescript/)
+- [ts-node not picking up .d.ts declarations](https://stackoverflow.com/questions/67436289/typescripts-declaration-merging-not-working-as-expected-using-ts-node/67441138#67441138)
