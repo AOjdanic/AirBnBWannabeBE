@@ -1,10 +1,10 @@
-import mongoose from 'mongoose';
+import { Schema, model } from 'mongoose';
 import bcrypt from 'bcryptjs';
 import crypto from 'crypto';
 
-import { UserSchema } from '../types';
+import { UserType, UserModel, UserStaticMethods } from '../types';
 
-const userSchema = new mongoose.Schema<UserSchema>({
+const userSchema = new Schema<UserType, UserModel, UserStaticMethods>({
   name: {
     type: String,
     required: [true, 'Please provide both your first and last name'],
@@ -63,15 +63,12 @@ userSchema.pre('save', async function (next) {
 userSchema.pre('save', async function (next) {
   if (!this.isModified('password') || this.isNew) return next();
 
-  this.changedPasswordAt = (Date.now() - 1000).toString(10);
+  this.changedPasswordAt = new Date(Date.now() - 1000);
 
   next();
 });
 
-userSchema.methods.comparePasswords = async function (
-  inputPass: string,
-  userPass: string,
-) {
+userSchema.methods.comparePasswords = async function (inputPass, userPass) {
   return await bcrypt.compare(inputPass, userPass);
 };
 
@@ -100,6 +97,6 @@ userSchema.methods.createPasswordResetToken = function () {
   return resetToken;
 };
 
-const User = mongoose.model('users', userSchema);
+const User = model<UserType, UserModel>('users', userSchema);
 
 export default User;
