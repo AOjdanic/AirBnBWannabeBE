@@ -1,6 +1,7 @@
-import mongoose from 'mongoose';
+import { Schema, model } from 'mongoose';
+import { Listing } from '../types/types';
 
-const listingSchema = new mongoose.Schema({
+const listingSchema = new Schema<Listing>({
   _id: {
     type: String,
   },
@@ -83,7 +84,7 @@ const listingSchema = new mongoose.Schema({
     type: Number,
   },
   amenities: {
-    type: Array,
+    type: [String],
   },
   price: {
     type: Number,
@@ -116,10 +117,10 @@ const listingSchema = new mongoose.Schema({
     type: Object,
   },
   reviews: {
-    type: Array,
+    type: [Object],
   },
 });
 
-const Listing = mongoose.model('listings', listingSchema);
+const Listing = model<Listing>('listings', listingSchema);
 
 export default Listing;

@@ -1,12 +1,13 @@
 import express from 'express';
 
 import {
+  getListing,
+  updateListing,
   createListing,
   deleteListing,
   getAllListings,
-  getListing,
-  updateListing,
 } from '../controllers/listingsController';
+
 import { protect, restrictTo } from '../controllers/authController';
 
 const router = express.Router();
