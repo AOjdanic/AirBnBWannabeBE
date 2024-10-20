@@ -1,13 +1,12 @@
-import { Query } from 'mongoose';
-import { Listing, RequestQuery } from '../types/types';
+import { ListingsMongooseQuery, ListingsRequestQuery } from '../types/types';
 
 export class ApiFilteringService {
-  mongooseQuery: Query<Listing[], Listing>;
-  requestQuery: RequestQuery;
+  mongooseQuery: ListingsMongooseQuery;
+  requestQuery: ListingsRequestQuery;
 
   constructor(
-    mongooseQuery: Query<Listing[], Listing>,
-    requestQuery: RequestQuery,
+    mongooseQuery: ListingsMongooseQuery,
+    requestQuery: ListingsRequestQuery,
   ) {
     this.mongooseQuery = mongooseQuery;
     this.requestQuery = requestQuery;

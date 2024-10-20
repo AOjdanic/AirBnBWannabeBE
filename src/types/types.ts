@@ -1,4 +1,4 @@
-import { Model, Types, HydratedDocument } from 'mongoose';
+import { Model, Types, HydratedDocument, Query } from 'mongoose';
 import { ParsedQs } from 'qs';
 
 export interface TAppError {
@@ -82,4 +82,5 @@ type featuresQuery = {
   page?: string;
   fields?: string;
 };
-export type RequestQuery = ParsedQs & featuresQuery;
+export type ListingsRequestQuery = ParsedQs & featuresQuery;
+export type ListingsMongooseQuery = Query<Listing[], Listing>;
