@@ -1,14 +1,13 @@
-import { ParsedQs } from 'qs';
 import { Query } from 'mongoose';
-import { UserType } from '../types/types';
+import { Listing, RequestQuery } from '../types/types';
 
 export class ApiFilteringService {
-  mongooseQuery: Query<UserType[], UserType>;
-  requestQuery: ParsedQs;
+  mongooseQuery: Query<Listing[], Listing>;
+  requestQuery: RequestQuery;
 
   constructor(
-    mongooseQuery: Query<UserType[], UserType>,
-    requestQuery: ParsedQs,
+    mongooseQuery: Query<Listing[], Listing>,
+    requestQuery: RequestQuery,
   ) {
     this.mongooseQuery = mongooseQuery;
     this.requestQuery = requestQuery;
@@ -34,7 +33,6 @@ export class ApiFilteringService {
 
   sort() {
     if (this.requestQuery.sort) {
-      // @ts-expect-error toeuhtoehu
       const sortBy = this.requestQuery.sort.split(',').join(' ');
       this.mongooseQuery = this.mongooseQuery.sort(sortBy);
     } else {
@@ -55,7 +53,6 @@ export class ApiFilteringService {
 
   select() {
     if (this.requestQuery.fields) {
-      // @ts-expect-error toeuhtoehu
       const fields = this.requestQuery.fields.split(',').join(' ');
       this.mongooseQuery = this.mongooseQuery.select(fields);
     } else {

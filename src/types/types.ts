@@ -1,4 +1,5 @@
 import { Model, Types, HydratedDocument } from 'mongoose';
+import { ParsedQs } from 'qs';
 
 export interface TAppError {
   status: string;
@@ -74,3 +75,11 @@ export type Listing = {
   review_scores: object;
   reviews: object[];
 };
+
+type featuresQuery = {
+  sort?: string;
+  limit?: string;
+  page?: string;
+  fields?: string;
+};
+export type RequestQuery = ParsedQs & featuresQuery;
