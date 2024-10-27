@@ -5,6 +5,7 @@ import helmet from 'helmet';
 import expressMongoSanitize from 'express-mongo-sanitize';
 import xss from 'xss-clean';
 import hpp from 'hpp';
+import cors from 'cors';
 
 import globalErrorHandler from './controllers/errorController';
 
@@ -15,6 +16,7 @@ import { AppError } from './services/AppError';
 
 const app = express();
 
+app.use(cors());
 app.use(helmet());
 
 const limiter = rateLimit({
@@ -26,6 +28,7 @@ const limiter = rateLimit({
 app.use(limiter);
 
 app.use(express.json({ limit: '10kb' }));
+app.use(express.urlencoded({ extended: true }));
 
 app.use(expressMongoSanitize());
 
