@@ -6,6 +6,7 @@ import expressMongoSanitize from 'express-mongo-sanitize';
 import xss from 'xss-clean';
 import hpp from 'hpp';
 import cors from 'cors';
+import cookieParser from 'cookie-parser';
 
 import globalErrorHandler from './controllers/errorController';
 
@@ -16,7 +17,13 @@ import { AppError } from './services/AppError';
 
 const app = express();
 
-app.use(cors());
+app.use(
+  cors({
+    origin: 'http://localhost:3000',
+    credentials: true,
+  }),
+);
+
 app.use(helmet());
 
 const limiter = rateLimit({
@@ -29,6 +36,7 @@ app.use(limiter);
 
 app.use(express.json({ limit: '10kb' }));
 app.use(express.urlencoded({ extended: true }));
+app.use(cookieParser());
 
 app.use(expressMongoSanitize());
 

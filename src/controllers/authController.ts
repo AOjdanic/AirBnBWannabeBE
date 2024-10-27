@@ -2,7 +2,7 @@ import crypto from 'crypto';
 import jwt from 'jsonwebtoken';
 import { promisify } from 'util';
 import { Types } from 'mongoose';
-import { Request, NextFunction, Response } from 'express';
+import { Request, NextFunction, Response, CookieOptions } from 'express';
 
 import User from '../models/Users';
 import sendEmail from '../services/email';
@@ -22,8 +22,9 @@ function createAndSendToken(user: UserDocument, status: number, res: Response) {
   const cookieOptions = {
     expires: new Date(Date.now() + Number(process.env.JWT_COOKIE_EXPIRES_IN!)),
     httpOnly: true,
-    secure: false,
-  };
+    secure: true,
+    sameSite: 'none',
+  } as CookieOptions;
 
   if (process.env.NODE_ENV === 'production') cookieOptions.secure = true;
 
@@ -76,11 +77,6 @@ export const login = catchAsyncErrors(async (req, res, next) => {
 export const protect = catchAsyncErrors(
   async (req: Request, res: Response, next: NextFunction) => {
     let token = '';
-    if (!req.headers.authorization) {
-      return next(
-        new AppError('You are not logged in. Please log in and come back', 401),
-      );
-    }
 
     if (
       req.headers.authorization &&
@@ -91,6 +87,8 @@ export const protect = catchAsyncErrors(
         const jwt = header?.split(' ')?.[1];
         token = jwt;
       }
+    } else if (req.cookies.jwt) {
+      token = req.cookies.jwt;
     }
 
     if (!token) {
